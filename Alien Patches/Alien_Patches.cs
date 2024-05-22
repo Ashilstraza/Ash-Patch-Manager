@@ -136,8 +136,10 @@ namespace Ashs_Alien_Patches
         public static void Alien_HotReload()
         {
             if (!isHotReload) return;
-            // Peek to see if HAR is handling HotReloading properly; if it isn't then we do it ourselves. Don't peek at Humans since they reload fine.
-            if (!((ThingDef_AlienRace)DefDatabase<ThingDef>.AllDefs.First(thingDef => thingDef is ThingDef_AlienRace && thingDef.defName != "Human")).alienRace.graphicPaths.head.GetSubGraphics().Any()) Alien_HotReloadLists();
+            // Peek to see if HAR is handling HotReloading properly; if it isn't then we do it ourselves.
+            ThingDef_AlienRace alien = DefDatabase<ThingDef>.AllDefs.First(thingDef => thingDef is ThingDef_AlienRace) as ThingDef_AlienRace;
+
+            if (!alien.alienRace.graphicPaths.body.GetSubGraphics().Any()) Alien_HotReloadLists();
 
             isHotReload = false;
 
