@@ -22,33 +22,24 @@ namespace Ashs_Alien_Patches
     /// </summary>
     public class DBHPatches
     {
-        private static readonly int version = 1;
-
+        [PatchVersion(1)]
         public DBHPatches(Type alienPatches)
         {
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Transpiler,
                    method: AccessTools.Method(typeof(NeedsUtil), "ShouldHaveNeed"),
                    patch: new HarmonyMethod(alienPatches, nameof(Alien_Patches.Alien_FixBaby_Transpiler)),
-                   version: version,
                    patchMessage: "  Patching DubsBadHygene.NeedsUtil.ShouldHaveNeed"));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Transpiler,
                    method: AccessTools.Method(typeof(WorkGiver_washPatient), "ShouldBeWashed"),
                    patch: new HarmonyMethod(alienPatches, nameof(Alien_Patches.Alien_FixBaby_Transpiler)),
-                   version: version,
                    patchMessage: "  Patching DubsBadHygene.WorkGiver_washPatient.ShouldBeWashed"));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Transpiler,
                    method: AccessTools.Method(typeof(WorkGiver_washChild), "ShouldBeWashed"),
                    patch: new HarmonyMethod(alienPatches, nameof(Alien_Patches.Alien_FixBaby_Transpiler)),
-                   version: version,
                    patchMessage: "  Patching DubsBadHygene.WorkGiver_washChild.ShouldBeWashed"));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Transpiler,
                    method: AccessTools.Method(typeof(WorkGiver_washChild), "PotentialWorkThingsGlobal"),
                    patch: new HarmonyMethod(alienPatches, nameof(Alien_Patches.Alien_FixBaby_Transpiler)),
-                   version: version,
                    patchMessage: "  Patching DubsBadHygene.WorkGiver_washChild.PotentialWorkThingsGlobal"));
         }
     }
@@ -56,18 +47,16 @@ namespace Ashs_Alien_Patches
 #if DEBUG && RW1_4
     internal class SomeThingsFloat
     {
-        private static readonly int version = 1;
-
+        [PatchVersion(1)]
         public SomeThingsFloat(Type SomeThingsFloat)
         {
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Transpiler,
                    method: AccessTools.Method(typeof(FloatingThings_MapComponent), "updateListOfWaterCells"),
                    patch: new HarmonyMethod(SomeThingsFloat, nameof(QuickFix_SomeThingsFloat_Transpiler)),
-                   version: version,
                    patchMessage: "  Patching WorkGiver_washChild.PotentialWorkThingsGlobal"));
         }
 
+        [PatchVersion(1), PatchType(PatchedTypes.Transpiler)]
         public static IEnumerable<CodeInstruction> QuickFix_SomeThingsFloat_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             FieldInfo map = AccessTools.Field(typeof(MapComponent), "map");
@@ -116,16 +105,16 @@ namespace Ashs_Alien_Patches
     {
         private static readonly int version = 1;
 
+        [PatchVersion(1)]
         public RFRumorHasIt(Type RFRumorHasIt)
         {
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Prefix,
                    method: AccessTools.Method(typeof(ThirdPartyManager), "FindCliques"),
                    patch: new HarmonyMethod(RFRumorHasIt, nameof(QuickFix_RFRumorHasIt)),
-                   version: version,
                    patchMessage: "  Patching WorkGiver_washChild.PotentialWorkThingsGlobal"));
         }
 
+        [PatchVersion(1), PatchType(PatchedTypes.Prefix)]
         public static bool QuickFix_RFRumorHasIt()
         {
             return false;
@@ -136,15 +125,16 @@ namespace Ashs_Alien_Patches
     {
         private static readonly int version = 1;
 
+        [PatchVersion(1)]
         public GZP(Type gzp)
         {
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                   type: Wrapped_Patch.PatchedTypes.Postfix,
                    method: AccessTools.Method(typeof(Zone_GrowingPlus), "ExposeData"),
                    patch: new HarmonyMethod(gzp, nameof(GZP_ExposeData_Postfix)),
-                   version: version,
                    patchMessage: "  Patching WorkGiver_washChild.PotentialWorkThingsGlobal"));
         }
+
+        [PatchVersion(1), PatchType(PatchedTypes.Postfix)]
         public static void GZP_ExposeData_Postfix(object __instance)
         {
             Zone_GrowingPlus growingZonePlus = __instance as Zone_GrowingPlus;

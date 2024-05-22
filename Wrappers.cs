@@ -12,28 +12,17 @@ namespace Ash_Patch_Manager
     /// <param name="type">The type of patch it is (Prefix, Postfix, or Transpiler)</param>
     /// <param name="method">The method to be patched</param>
     /// <param name="patch">The patch that is to be applied.</param>
-    /// <param name="version">The version of the patch, used for deciding which one to use if there are multiple.</param>
     /// <param name="patchMessage">What, if anything, should be added to the patch log.</param>
-    public class Wrapped_Patch(Wrapped_Patch.PatchedTypes type, MethodBase method, HarmonyMethod patch, int version, string patchMessage = "")
+    public class Wrapped_Patch(MethodBase method, HarmonyMethod patch, string patchMessage = "")
     {
-        /// <summary>
-        /// The supported types of patches.
-        /// </summary>
-        public enum PatchedTypes : byte
-        {
-            Prefix,
-            Postfix,
-            Transpiler
-        }
-
         /// <summary>The type of patch this is.</summary>
-        public PatchedTypes PatchType => type;
+        public PatchedTypes PatchType => (Attribute.GetCustomAttribute(patch.method, typeof(PatchType)) as PatchType).Type;
         /// <summary>The method this is patching.</summary>
         public MethodBase MethodBase => method;
         /// <summary>The patch that is being applied.</summary>
         public HarmonyMethod HarmonyMethod => patch;
         /// <summary>The version of patch this is.</summary>
-        public Wrapped_Patch_Version Version { get; } = new Wrapped_Patch_Version(method, type, version);
+        public Wrapped_Patch_Version Version { get; } = new Wrapped_Patch_Version(method, (Attribute.GetCustomAttribute(patch.method, typeof(PatchType)) as PatchType).Type, (Attribute.GetCustomAttribute(patch.method, typeof(PatchVersion)) as PatchVersion).Version);
         /// <summary>The message we should add to the patch log.</summary>
         public string PatchMessage => patchMessage;
     }
@@ -44,12 +33,12 @@ namespace Ash_Patch_Manager
     /// <param name="method">The method that is being patched.</param>
     /// <param name="type">The type of patch this is.</param>
     /// <param name="version">The version of patch.</param>
-    public class Wrapped_Patch_Version(MethodBase method, Wrapped_Patch.PatchedTypes type, int version)
+    public class Wrapped_Patch_Version(MethodBase method, PatchedTypes type, int version)
     {
         /// <summary>The version number.</summary>
         public int Version { get { return version; } }
         /// <summary>The type of patch.</summary>
-        public Wrapped_Patch.PatchedTypes Type => type;
+        public PatchedTypes Type => type;
         /// <summary>The method the patch applies to.</summary>
         public MethodBase Method => method;
 
@@ -135,12 +124,11 @@ namespace Ash_Patch_Manager
     /// </summary>
     /// <param name="patchSet">The class containing a set of patches</param>
     /// <param name="mod">The mod the patches are for</param>
-    /// <param name="version">The version of the patch set</param>
-    public class Wrapped_PatchSet(Type patchSet, string mod, int version, object[] args)
+    public class Wrapped_PatchSet(Type patchSet, string mod, object[] args)
     {
         public Type PatchSet => patchSet;
         public string Mod => mod;
-        public Wrapped_PatchSet_Version Version => new(mod, version);
+        public Wrapped_PatchSet_Version Version => new(mod, (Attribute.GetCustomAttribute(patchSet, typeof(PatchVersion)) as PatchVersion).Version);
 
         public object[] Args => args;
     }

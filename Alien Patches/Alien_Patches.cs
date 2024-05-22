@@ -20,8 +20,6 @@ namespace Ashs_Alien_Patches
     /// </summary>
     public class Alien_Patches
     {
-        private static readonly int version = 1;
-
         private static readonly List<Action<bool>> hotReloadMethods = [];
 
         public static List<string> RaceList { get; private set; } = [];
@@ -36,62 +34,49 @@ namespace Ashs_Alien_Patches
             if (!Harmony.GetPatchInfo(AccessTools.Method(typeof(IncidentWorker_Disease), "CanAddHediffToAnyPartOfDef"))?.Transpilers?.Any(patch => patch.owner == alienRaceID) ?? true)
             {
                 Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                    type: Wrapped_Patch.PatchedTypes.Transpiler,
                     method: AccessTools.Method(typeof(IncidentWorker_Disease), "CanAddHediffToAnyPartOfDef"),
                     patch: new HarmonyMethod(thisClass, nameof(Alien_FixBaby_Transpiler)),
-                    version: version,
                     patchMessage: "  Patching IncidentWorker_Disease.CanAddHediffToAnyPartOfDef"));
             }
 
             if (!Harmony.GetPatchInfo(AccessTools.Method(typeof(ITab_Pawn_Gear), "get_IsVisible"))?.Transpilers?.Any(patch => patch.owner == alienRaceID) ?? true)
             {
                 Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                    type: Wrapped_Patch.PatchedTypes.Transpiler,
                     method: AccessTools.Method(typeof(ITab_Pawn_Gear), "get_IsVisible"),
                     patch: new HarmonyMethod(thisClass, nameof(Alien_FixBaby_Transpiler)),
-                    version: version,
                     patchMessage: "  Patching ITab_Pawn_Gear.get_IsVisible"));
             }
 
             if (!Harmony.GetPatchInfo(AccessTools.Method(typeof(Pawn_IdeoTracker), "get_CertaintyChangeFactor"))?.Transpilers?.Any(patch => !patch.owner.NullOrEmpty()) ?? true)
             {
                 Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                    type: Wrapped_Patch.PatchedTypes.Transpiler,
                     method: AccessTools.Method(typeof(Pawn_IdeoTracker), "get_CertaintyChangeFactor"),
                     patch: new HarmonyMethod(thisClass, nameof(Alien_CertaintyChangeFactor_Transpiler)),
-                    version: version,
                     patchMessage: "  Patching Pawn_IdeoTracker.get_CertaintyChangeFactor"));
             }
 
             if (!Harmony.GetPatchInfo(AccessTools.Method(typeof(HediffGiver), nameof(HediffGiver.TryApply)))?.Transpilers?.Any(patch => patch.owner == alienRaceID) ?? true)
             {
                 Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                    type: Wrapped_Patch.PatchedTypes.Transpiler,
                     method: AccessTools.Method(typeof(HediffGiver), nameof(HediffGiver.TryApply)),
                     patch: new HarmonyMethod(thisClass, nameof(Alien_FixBaby_Transpiler)),
-                    version: version,
                     patchMessage: "  Patching HediffGiver.TryApply"));
             }
 #if !RWPre1_5
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                    type: Wrapped_Patch.PatchedTypes.Postfix,
                     method: AccessTools.Method(typeof(PlayDataLoader), nameof(PlayDataLoader.HotReloadDefs)),
                     patch: new HarmonyMethod(thisClass, nameof(Alien_HotReloadNotify)),
-                    version: version,
                     patchMessage: "  Adding HotReload support to HAR"));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
-                    type: Wrapped_Patch.PatchedTypes.Postfix,
                     method: AccessTools.Method(typeof(MapDrawer), nameof(MapDrawer.RegenerateEverythingNow)),
-                    patch: new HarmonyMethod(thisClass, nameof(Alien_HotReload)),
-                    version: version));
+                    patch: new HarmonyMethod(thisClass, nameof(Alien_HotReload))));
 #endif
 
 #if !RWPre1_4
             Ash_Patch_Manager.Ash_Patch_Manager.Register_PatchSet(new Wrapped_PatchSet(
                     patchSet: typeof(DBHPatches),
                     args: [thisClass],
-                    mod: "Dubwise.DubsBadHygiene",
-                    version: version));
+                    mod: "Dubwise.DubsBadHygiene"));
 #endif
 
 #if DEBUG && RW1_4   // Personal patches
@@ -107,6 +92,7 @@ namespace Ashs_Alien_Patches
         /// <summary>
         /// Sets isHotReload to true after the Dev function is called and before the reload happens.
         /// </summary>
+        [PatchVersion(1), PatchType(PatchedTypes.Postfix)]
         public static void Alien_HotReloadNotify()
         {
             isHotReload = true;
@@ -133,6 +119,7 @@ namespace Ashs_Alien_Patches
         /// 
         /// Additionally, it also calls any registered methods.
         /// </summary>
+        [PatchVersion(2), PatchType(PatchedTypes.Postfix)]
         public static void Alien_HotReload()
         {
             if (!isHotReload) return;
@@ -140,7 +127,7 @@ namespace Ashs_Alien_Patches
             ThingDef_AlienRace alien = DefDatabase<ThingDef>.AllDefs.First(thingDef => thingDef is ThingDef_AlienRace) as ThingDef_AlienRace;
 
             if (!alien.alienRace.graphicPaths.body.GetSubGraphics().Any()) Alien_HotReloadLists();
-
+            
             isHotReload = false;
 
             foreach (Action<bool> method in hotReloadMethods)
@@ -332,6 +319,7 @@ namespace Ashs_Alien_Patches
         /// <param name="instructions">The instructions we are messing with.</param>
         /// <param name="ilGenerator">The IDGenerator that allows us to create local variables and labels.</param>
         /// <returns>The fixed code.</returns>
+        [PatchVersion(1), PatchType(PatchedTypes.Transpiler)]
         public static IEnumerable<CodeInstruction> Alien_FixBaby_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             FieldInfo humanLikeBaby = AccessTools.Field(typeof(LifeStageDefOf), "HumanlikeBaby");
@@ -392,6 +380,7 @@ namespace Ashs_Alien_Patches
         /// <param name="instructions">The instructions we are messing with.</param>
         /// <param name="ilGenerator">The IDGenerator that allows us to create local variables and labels.</param>
         /// <returns>The code that is usable.</returns>
+        [PatchVersion(1), PatchType(PatchedTypes.Transpiler)]
         public static IEnumerable<CodeInstruction> Alien_CertaintyChangeFactor_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo alienCertaintyChangeFactor = AccessTools.Method(typeof(Alien_Patches), nameof(Alien_Patches.CertaintyCurve));
@@ -477,23 +466,21 @@ namespace Ashs_Alien_Patches
         /// <summary>
         /// Personal Patches for various annoyances/bugs
         /// </summary>
+        [PatchVersion(1)]
         private static void PersonalPatches(Harmony harmony, Type thisClass)
         {
             Ash_Patch_Manager.Ash_Patch_Manager.Register_PatchSet(new Wrapped_PatchSet(
                     patchSet: typeof(SomeThingsFloat),
                     mod: "Mlie.SomeThingsFloat",
-                    args: [thisClass],
-                    version: version));
+                    args: [thisClass]));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_PatchSet(new Wrapped_PatchSet(
                     patchSet: typeof(RFRumorHasIt),
                     mod: "Mlie.RFRumorHasIt",
-                    args: [thisClass],
-                    version: version));
+                    args: [thisClass]));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_PatchSet(new Wrapped_PatchSet(
                     patchSet: typeof(GZP),
                     mod: "babylettuce.growingzone",
-                    args: [thisClass],
-                    version: version));
+                    args: [thisClass]));
 
             // faster baby feeding, maybe new mod?
             harmony.Patch(AccessTools.GetDeclaredMethods(typeof(JobDriver_BottleFeedBaby)).ElementAt(13), transpiler: new HarmonyMethod(thisClass, nameof(FasterFeeding_Transpiler)));
@@ -501,6 +488,7 @@ namespace Ashs_Alien_Patches
         }
 
    // Personal patches
+        [PatchVersion(1), PatchType(PatchedTypes.Transpiler)]
         public static IEnumerable<CodeInstruction> FasterFeeding_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> instructionList = instructions.ToList();

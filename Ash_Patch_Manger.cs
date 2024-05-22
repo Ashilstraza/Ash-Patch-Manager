@@ -18,9 +18,9 @@ namespace Ash_Patch_Manager
         private static readonly SortedDictionary<Wrapped_Patch_Version, Wrapped_Patch> patches = new(new Wrapped_Patch_Comparer());
         /// <summary>List of the various patch sets to apply</summary>
         private static readonly SortedDictionary<Wrapped_PatchSet_Version, Wrapped_PatchSet> modPatchSets = new(new Wrapped_PatchSet_Comparer());
-        /// <summary>List of the varouos methods to patch</summary>
+        /// <summary>List of the various methods to patch</summary>
         private static readonly List<MethodBase> patchedMethods = [];
-
+        /// <summary>List of the various mods to patch</summary>
         private static readonly List<string> patchedMods = [];
 
         /// <summary>Ash Patch Manager Harmony ID</summary>
@@ -49,9 +49,9 @@ namespace Ash_Patch_Manager
                     foreach (MethodBase method in patchedMethods)
                     {
                         
-                        Wrapped_Patch prefix = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == Wrapped_Patch.PatchedTypes.Prefix).Value;
-                        Wrapped_Patch postfix = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == Wrapped_Patch.PatchedTypes.Postfix).Value;
-                        Wrapped_Patch transpiler = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == Wrapped_Patch.PatchedTypes.Transpiler).Value;
+                        Wrapped_Patch prefix = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == PatchedTypes.Prefix).Value;
+                        Wrapped_Patch postfix = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == PatchedTypes.Postfix).Value;
+                        Wrapped_Patch transpiler = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == PatchedTypes.Transpiler).Value;
                         string message = $"{(prefix != null ? prefix.PatchMessage + "\n" : "")}{(postfix != null ? postfix.PatchMessage + "\n" : "")}{(transpiler != null ? transpiler.PatchMessage + "\n" : "")}";
                         if(!message.TrimEndNewlines().Equals("")) stringBuilder.Append(message);
                         harmony.Patch(method,
