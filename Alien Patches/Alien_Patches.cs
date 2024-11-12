@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
+using static AlienRace.AlienPartGenerator;
 
 namespace Ashs_Alien_Patches
 {
@@ -23,14 +24,14 @@ namespace Ashs_Alien_Patches
         private static readonly List<Action<bool>> hotReloadMethods = [];
 
         public static List<string> RaceList { get; private set; } = [];
-        
+
 
         public Alien_Patches(Harmony harmony)
         {
             Type thisClass = typeof(Alien_Patches);
 
             string alienRaceID = "rimworld.erdelf.alien_race.main";
-            
+
             if (!Harmony.GetPatchInfo(AccessTools.Method(typeof(IncidentWorker_Disease), "CanAddHediffToAnyPartOfDef"))?.Transpilers?.Any(patch => patch.owner == alienRaceID) ?? true)
             {
                 Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
@@ -119,7 +120,7 @@ namespace Ashs_Alien_Patches
         /// 
         /// Additionally, it also calls any registered methods.
         /// </summary>
-        [PatchVersion(2), PatchType(PatchedTypes.Postfix)]
+        [PatchVersion(3), PatchType(PatchedTypes.Postfix)]
         public static void Alien_HotReload()
         {
             if (!isHotReload) return;
@@ -127,7 +128,7 @@ namespace Ashs_Alien_Patches
             ThingDef_AlienRace alien = DefDatabase<ThingDef>.AllDefs.First(thingDef => thingDef is ThingDef_AlienRace) as ThingDef_AlienRace;
 
             if (!alien.alienRace.graphicPaths.body.GetSubGraphics().Any()) Alien_HotReloadLists();
-            
+
             isHotReload = false;
 
             foreach (Action<bool> method in hotReloadMethods)
@@ -141,7 +142,7 @@ namespace Ashs_Alien_Patches
         /// </summary>
         private static void Alien_HotReloadLists()
         {
-            //AlienHarmony harmony = new(id: "rimworld.erdelf.alien_race.main");
+            AlienHarmony harmony = new(id: "rimworld.erdelf.alien_race.main");
             ThoughtSettings.thoughtRestrictionDict = [];
             RaceRestrictionSettings.apparelRestricted = [];
             RaceRestrictionSettings.weaponRestricted = [];
@@ -264,6 +265,15 @@ namespace Ashs_Alien_Patches
                     ThingCategoryDefOf.CorpsesHumanlike.ResolveReferences();
                 }
 
+                foreach (Pawn pawn in PawnsFinder.All_AliveOrDead)
+                {
+                    AlienComp comp = pawn.TryGetComp<AlienComp>();
+                    if (comp != null)
+                    {
+                        Traverse.Create(comp).Field("nodeProps").SetValue(null);
+                        comp.CompRenderNodes();
+                    }
+                }
                 ar.alienRace.generalSettings.alienPartGenerator.GenerateMeshsAndMeshPools();
 
                 if (ar.alienRace.generalSettings.humanRecipeImport && ar != ThingDefOf.Human)
@@ -282,9 +292,19 @@ namespace Ashs_Alien_Patches
                     ar.recipes.RemoveDuplicates();
                 }
 
-                // TODO: Nicely patch workGiverList
+                // Unpatch 
+                ar.alienRace.raceRestriction?.workGiverList?.ForEach(action: wgd =>
+                {
+                    if (wgd == null) return;
 
-                /*ar.alienRace.raceRestriction?.workGiverList?.ForEach(action: wgd =>
+                    harmony.harmony.Unpatch(AccessTools.Method(wgd.giverClass, name: "JobOnThing"), HarmonyPatchType.All, "rimworld.erdelf.alien_race.main");
+                    MethodInfo hasJobOnThingInfo = AccessTools.Method(wgd.giverClass, name: "HasJobOnThing");
+                    if (hasJobOnThingInfo?.IsDeclaredMember() ?? false)
+                        harmony.harmony.Unpatch(AccessTools.Method(wgd.giverClass, "HasJobOnThing"), HarmonyPatchType.All, "rimworld.erdelf.alien_race.main");
+                });
+
+                // Repatch
+                ar.alienRace.raceRestriction?.workGiverList?.ForEach(action: wgd =>
                 {
                     if (wgd == null) return;
 
@@ -293,7 +313,7 @@ namespace Ashs_Alien_Patches
                     MethodInfo hasJobOnThingInfo = AccessTools.Method(wgd.giverClass, name: "HasJobOnThing");
                     if (hasJobOnThingInfo?.IsDeclaredMember() ?? false)
                         harmony.Patch(hasJobOnThingInfo, postfix: new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.GenericHasJobOnThingPostfix)));
-                });*/
+                });
             }
 
             foreach (ThingDef def in DefDatabase<ThingDef>.AllDefs)
