@@ -20,6 +20,7 @@ namespace Ashs_Alien_Patches
     /// <summary>
     /// Dub's Bad Hygene patch for handling non-human babies.
     /// </summary>
+    [PatchVersion(1)]
     public class DBHPatches
     {
         [PatchVersion(1)]
@@ -45,6 +46,7 @@ namespace Ashs_Alien_Patches
     }
     // Personal Patches
 #if DEBUG && RW1_4
+    [PatchVersion(1)]    
     internal class SomeThingsFloat
     {
         [PatchVersion(1)]
@@ -101,6 +103,7 @@ namespace Ashs_Alien_Patches
         }
     }
 
+    [PatchVersion(1)]
     internal class RFRumorHasIt
     {
         private static readonly int version = 1;
@@ -121,6 +124,7 @@ namespace Ashs_Alien_Patches
         }
     }
 
+    [PatchVersion(1)]
     internal class GZP
     {
         private static readonly int version = 1;
