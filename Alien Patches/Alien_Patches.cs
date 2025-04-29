@@ -64,13 +64,13 @@ namespace Ashs_Alien_Patches
                     patchMessage: "  Patching HediffGiver.TryApply"));
             }
 #if !RWPre1_5
-            Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
+            /*Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
                     method: AccessTools.Method(typeof(PlayDataLoader), nameof(PlayDataLoader.HotReloadDefs)),
                     patch: new HarmonyMethod(thisClass, nameof(Alien_HotReloadNotify)),
                     patchMessage: "  Adding HotReload support to HAR"));
             Ash_Patch_Manager.Ash_Patch_Manager.Register_Patch(new Wrapped_Patch(
                     method: AccessTools.Method(typeof(MapDrawer), nameof(MapDrawer.RegenerateEverythingNow)),
-                    patch: new HarmonyMethod(thisClass, nameof(Alien_HotReload))));
+                    patch: new HarmonyMethod(thisClass, nameof(Alien_HotReload))));*/
 #endif
 
 #if !RWPre1_4
