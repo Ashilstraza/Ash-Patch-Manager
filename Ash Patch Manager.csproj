@@ -9,9 +9,21 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.6 Release|AnyCPU'">
+    <OutputPath>..\References\$(Configuration)</OutputPath>
+    <DefineConstants>RW1_6</DefineConstants>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.5 Release|AnyCPU'">
     <OutputPath>..\References\$(Configuration)</OutputPath>
-    <DefineConstants>RW1_5</DefineConstants>
+    <DefineConstants>RW1_5;RWPre1_6</DefineConstants>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -69,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.5 Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\References\$(Configuration)</OutputPath>
-    <DefineConstants>TRACE;DEBUG;RW1_5</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;RW1_5;RWPre_1_6</DefineConstants>
     <DebugType>portable</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
@@ -123,8 +135,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.6 Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\1.6 Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;RW1_5</DefineConstants>
+    <OutputPath>..\References\$(Configuration)</OutputPath>
+    <DefineConstants>TRACE;DEBUG;RW1_6</DefineConstants>
     <DebugType>portable</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
