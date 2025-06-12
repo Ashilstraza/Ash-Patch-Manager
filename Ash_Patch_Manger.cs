@@ -48,12 +48,12 @@ namespace Ash_Patch_Manager
                     }
                     foreach (MethodBase method in patchedMethods)
                     {
-                        
+
                         Wrapped_Patch prefix = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == PatchedTypes.Prefix).Value;
                         Wrapped_Patch postfix = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == PatchedTypes.Postfix).Value;
                         Wrapped_Patch transpiler = patches.FirstOrDefault(patch => patch.Value.MethodBase == method && patch.Value.PatchType == PatchedTypes.Transpiler).Value;
                         string message = $"{(prefix != null ? prefix.PatchMessage + "\n" : "")}{(postfix != null ? postfix.PatchMessage + "\n" : "")}{(transpiler != null ? transpiler.PatchMessage + "\n" : "")}";
-                        if(!message.TrimEndNewlines().Equals("")) stringBuilder.Append(message);
+                        if (!message.TrimEndNewlines().Equals("")) stringBuilder.Append(message);
                         harmony.Patch(method,
                             prefix: prefix?.HarmonyMethod,
                             postfix: postfix?.HarmonyMethod,
@@ -64,7 +64,7 @@ namespace Ash_Patch_Manager
                 {
                     Log.Error($"{HarmonyID}: Exception when trying to apply Alien Patches. Please notify the author for the cutebold/argonian mod with the logs. Thanks!\n{e}");
                     stringBuilder.AppendLine("Exception Thrown, Aborting Patching");
-                }   
+                }
                 finally
                 {
                     if (!stringBuilder.ToString().Equals(greetString)) Log.Message(stringBuilder.ToString().TrimEndNewlines());
