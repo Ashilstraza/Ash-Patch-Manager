@@ -347,7 +347,7 @@ namespace Ashs_Alien_Patches
         /// <param name="instructions">The instructions we are messing with.</param>
         /// <param name="ilGenerator">The IDGenerator that allows us to create local variables and labels.</param>
         /// <returns>The fixed code.</returns>
-        [PatchVersion(1), PatchType(PatchedTypes.Transpiler)]
+        [PatchVersion(2), PatchType(PatchedTypes.Transpiler)]
         public static IEnumerable<CodeInstruction> Alien_FixBaby_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             FieldInfo humanLikeBaby = AccessTools.Field(typeof(LifeStageDefOf), "HumanlikeBaby");
@@ -386,14 +386,17 @@ namespace Ashs_Alien_Patches
                             {
                                 tempInstruction.opcode = OpCodes.Brfalse;
                             }
-
+                            else if (instructionList[i + 1].opcode == OpCodes.Ceq)
+                            {
+                                goto SkipInstruction;
+                            }
                             tempInstruction.operand = instructionList[i + 1].operand; // Grab branch label
 
                             yield return tempInstruction;
                         }
                         else yield return codeInstruction;
                     }
-
+                SkipInstruction:
                     i += 2;
                     instruction = instructionList[i];
                 }
