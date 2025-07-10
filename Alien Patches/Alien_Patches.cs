@@ -74,10 +74,10 @@ namespace Ashs_Alien_Patches
 #endif
 
 #if !RWPre1_4
-            /*Ash_Patch_Manager.Ash_Patch_Manager.Register_PatchSet(new Wrapped_PatchSet(
+            Ash_Patch_Manager.Ash_Patch_Manager.Register_PatchSet(new Wrapped_PatchSet(
                     patchSet: typeof(DBHPatches),
                     args: [thisClass],
-                    mod: "Dubwise.DubsBadHygiene"));*/
+                    mod: "Dubwise.DubsBadHygiene"));
 #endif
 
 #if DEBUG && RW1_4   // Personal patches
