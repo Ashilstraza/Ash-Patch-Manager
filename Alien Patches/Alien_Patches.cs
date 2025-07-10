@@ -391,7 +391,7 @@ namespace Ashs_Alien_Patches
                                 goto SkipInstruction;
                             }
                             tempInstruction.operand = instructionList[i + 1].operand; // Grab branch label
-
+                            
                             yield return tempInstruction;
                         }
                         else yield return codeInstruction;
