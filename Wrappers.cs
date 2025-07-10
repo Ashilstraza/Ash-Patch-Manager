@@ -24,7 +24,7 @@ namespace Ash_Patch_Manager
         /// <summary>The version of patch this is.</summary>
         public Wrapped_Patch_Version Version { get; } = new Wrapped_Patch_Version(method, (Attribute.GetCustomAttribute(patch.method, typeof(PatchType)) as PatchType).Type, (Attribute.GetCustomAttribute(patch.method, typeof(PatchVersion)) as PatchVersion).Version);
         /// <summary>The message we should add to the patch log.</summary>
-        public string PatchMessage => patchMessage;
+        public string PatchMessage => patchMessage + " v" + Version.Version;
     }
 
     /// <summary>
@@ -41,17 +41,19 @@ namespace Ash_Patch_Manager
         public PatchedTypes Type => type;
         /// <summary>The method the patch applies to.</summary>
         public MethodBase Method => method;
+        /// <summary>The declaring type for the method the patch is to apply to.</summary>
+        public Type DeclaringType => method.DeclaringType;
 
         public override string ToString()
         {
-            return $"{type} patch, version {version}, for {method}";
+            return $"{type} patch, version {version}, for {method}, in {method.DeclaringType}";
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Wrapped_Patch_Version o)
             {
-                return version == o.Version && type == o.Type && method.Equals(o.Method);
+                return version == o.Version && type == o.Type && method.Equals(o.Method) && method.DeclaringType.Equals(o.DeclaringType);
             }
             return base.Equals(obj);
         }
@@ -72,6 +74,7 @@ namespace Ash_Patch_Manager
             int result = TypeCompare(x, y);
             if (result == 0) result = VersionCompare(x, y);
             if (result == 0) result = MethodCompare(x, y);
+            if (result == 0) result = DeclaringTypeCompare(x, y);
             return result;
         }
 
@@ -114,6 +117,19 @@ namespace Ash_Patch_Manager
         int MethodCompare(Wrapped_Patch_Version x, Wrapped_Patch_Version y)
         {
             return x.Method.Name.CompareTo(y.Method.Name);
+        }
+        /// <summary>
+        /// Compares two Wrapped Patches on the basis of their declaring type
+        /// </summary>
+        /// <param name="x">The first patch to compare.</param>
+        /// <param name="y">The second patch to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of x and y:
+        ///- If less than 0, x is less than y.
+        ///- If 0, x equals y.
+        ///- If greater than 0, x is greater than y.</returns>
+        int DeclaringTypeCompare(Wrapped_Patch_Version x, Wrapped_Patch_Version y)
+        {
+            return x.DeclaringType.Name.CompareTo(y.DeclaringType.Name);
         }
     }
     #endregion
