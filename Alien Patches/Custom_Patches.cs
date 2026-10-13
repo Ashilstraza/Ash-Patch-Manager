@@ -1,4 +1,5 @@
 ﻿#if DEBUG && RW1_4
+
 using SomeThingsFloat;
 using Rumor_Code;
 using GrowingZonePlus;
@@ -7,12 +8,17 @@ using System.Reflection.Emit;
 using System.Reflection;
 using System.Linq;
 using Verse;
+
 #endif
 
 #if !RWPre1_4
+
 using Ash_Patch_Manager;
+
 using DubsBadHygiene;
+
 using HarmonyLib;
+
 using System;
 
 namespace Ashs_Alien_Patches
@@ -46,7 +52,8 @@ namespace Ashs_Alien_Patches
     }
     // Personal Patches
 #if DEBUG && RW1_4
-    [PatchVersion(1)]    
+
+    [PatchVersion(1)]
     internal class SomeThingsFloat
     {
         [PatchVersion(1)]
@@ -106,8 +113,6 @@ namespace Ashs_Alien_Patches
     [PatchVersion(1)]
     internal class RFRumorHasIt
     {
-        private static readonly int version = 1;
-
         [PatchVersion(1)]
         public RFRumorHasIt(Type RFRumorHasIt)
         {
@@ -127,8 +132,6 @@ namespace Ashs_Alien_Patches
     [PatchVersion(1)]
     internal class GZP
     {
-        private static readonly int version = 1;
-
         [PatchVersion(1)]
         public GZP(Type gzp)
         {
@@ -141,7 +144,7 @@ namespace Ashs_Alien_Patches
         [PatchVersion(1), PatchType(PatchedTypes.Postfix)]
         public static void GZP_ExposeData_Postfix(object __instance)
         {
-            Zone_GrowingPlus growingZonePlus = __instance as Zone_GrowingPlus;
+            Zone_GrowingPlus growingZonePlus = (Zone_GrowingPlus)__instance;
             var billStack = growingZonePlus.customBillStack;
             foreach (var bill in billStack)
             {
@@ -151,10 +154,10 @@ namespace Ashs_Alien_Patches
                     UID.SetValue(growingZonePlus.UniqueID);
                 }
                 bill.zgp ??= growingZonePlus;
-
             }
         }
     }
 #endif
 }
+
 #endif

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
+// General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Ash Patch Manager")]
@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Ash Patch Manager")]
 [assembly: AssemblyCopyright("Copyright Ashilstraza, see License.txt for more information.")]
 
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(true)]
 
@@ -20,11 +20,12 @@ using System.Runtime.InteropServices;
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
-//      Minor Version 
+//      Minor Version
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.5.1")]
+[assembly: AssemblyVersion("1.7.0")]
 
+// 1.7.0 Updated to RW 1.7
 // 1.5.1 Moved Version to an attribute.
 // 1.5.0 Initial release.

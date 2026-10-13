@@ -1,30 +1,34 @@
 ﻿#if !RWPre1_4
 #if !RWPre1_5
+
 using AlienRace;
+
 #endif
+
 using Ash_Patch_Manager;
 
 using HarmonyLib;
+
 using RimWorld;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+
 using Verse;
+
 using static AlienRace.AlienPartGenerator;
 
 namespace Ashs_Alien_Patches
 {
-    /// <summary>
-    /// Set of patches for all Alien races, provided by the Cutebold mod author
-    /// </summary>
+    /// <summary>Set of patches for all Alien races, provided by the Cutebold mod author</summary>
     public class Alien_Patches
     {
         private static readonly List<Action<bool>> hotReloadMethods = [];
 
         public static List<string> RaceList { get; private set; } = [];
-
 
         public Alien_Patches(Harmony harmony)
         {
@@ -88,7 +92,7 @@ namespace Ashs_Alien_Patches
 #if !RWPre1_5
 
         /// <summary>If Rimworld is starting to hot reload.</summary>
-        private static bool isHotReload = false;
+        private static bool isHotReload;
 
         /// <summary>
         /// Sets isHotReload to true after the Dev function is called and before the reload happens.
@@ -108,7 +112,7 @@ namespace Ashs_Alien_Patches
         /// public static void BuildLists(bool hotReload)
         /// </code>
         /// </remarks>
-        /// 
+        ///
         /// <param name="method">The method to be called.</param>
         public static void Alien_HotReloadAddMethod(Action<bool> method)
         {
@@ -117,7 +121,7 @@ namespace Ashs_Alien_Patches
 
         /// <summary>
         /// Hooks the map drawer's RegenerateEverythingNow() to make the call to rebuild HAR's lists if it is a hot reload.
-        /// 
+        ///
         /// Additionally, it also calls any registered methods.
         /// </summary>
         [PatchVersion(3), PatchType(PatchedTypes.Postfix)]
@@ -125,7 +129,7 @@ namespace Ashs_Alien_Patches
         {
             if (!isHotReload) return;
             // Peek to see if HAR is handling HotReloading properly; if it isn't then we do it ourselves.
-            ThingDef_AlienRace alien = DefDatabase<ThingDef>.AllDefs.First(thingDef => thingDef is ThingDef_AlienRace) as ThingDef_AlienRace;
+            ThingDef_AlienRace alien = (ThingDef_AlienRace)DefDatabase<ThingDef>.AllDefs.First(thingDef => thingDef is ThingDef_AlienRace);
 
             if (!alien.alienRace.graphicPaths.body.GetSubGraphics().Any()) Alien_HotReloadLists();
 
@@ -169,90 +173,93 @@ namespace Ashs_Alien_Patches
                             ThoughtSettings.thoughtRestrictionDict.Add(thoughtDef, []);
                         ThoughtSettings.thoughtRestrictionDict[thoughtDef].Add(ar);
                     }
-
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.apparelList)
+                    if (ar.alienRace.raceRestriction != null)
                     {
-                        RaceRestrictionSettings.apparelRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whiteApparelList.Add(thingDef);
-                    }
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.apparelList)
+                        {
+                            RaceRestrictionSettings.apparelRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whiteApparelList.Add(thingDef);
+                        }
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.weaponList)
+                        {
+                            RaceRestrictionSettings.weaponRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whiteWeaponList.Add(thingDef);
+                        }
 
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.weaponList)
-                    {
-                        RaceRestrictionSettings.weaponRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whiteWeaponList.Add(thingDef);
-                    }
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.buildingList)
+                        {
+                            RaceRestrictionSettings.buildingRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whiteBuildingList.Add(thingDef);
+                        }
 
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.buildingList)
-                    {
-                        RaceRestrictionSettings.buildingRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whiteBuildingList.Add(thingDef);
-                    }
+                        foreach (RecipeDef recipeDef in ar.alienRace.raceRestriction.recipeList)
+                        {
+                            RaceRestrictionSettings.recipeRestricted.Add(recipeDef);
+                            ar.alienRace.raceRestriction.whiteRecipeList.Add(recipeDef);
+                        }
 
-                    foreach (RecipeDef recipeDef in ar.alienRace.raceRestriction.recipeList)
-                    {
-                        RaceRestrictionSettings.recipeRestricted.Add(recipeDef);
-                        ar.alienRace.raceRestriction.whiteRecipeList.Add(recipeDef);
-                    }
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.plantList)
+                        {
+                            RaceRestrictionSettings.plantRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whitePlantList.Add(thingDef);
+                        }
 
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.plantList)
-                    {
-                        RaceRestrictionSettings.plantRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whitePlantList.Add(thingDef);
-                    }
+                        foreach (TraitDef traitDef in ar.alienRace.raceRestriction.traitList)
+                        {
+                            RaceRestrictionSettings.traitRestricted.Add(traitDef);
+                            ar.alienRace.raceRestriction.whiteTraitList.Add(traitDef);
+                        }
 
-                    foreach (TraitDef traitDef in ar.alienRace.raceRestriction.traitList)
-                    {
-                        RaceRestrictionSettings.traitRestricted.Add(traitDef);
-                        ar.alienRace.raceRestriction.whiteTraitList.Add(traitDef);
-                    }
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.foodList)
+                        {
+                            RaceRestrictionSettings.foodRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whiteFoodList.Add(thingDef);
+                        }
 
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.foodList)
-                    {
-                        RaceRestrictionSettings.foodRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whiteFoodList.Add(thingDef);
-                    }
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.petList)
+                        {
+                            RaceRestrictionSettings.petRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whitePetList.Add(thingDef);
+                        }
 
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.petList)
-                    {
-                        RaceRestrictionSettings.petRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whitePetList.Add(thingDef);
-                    }
+#pragma warning disable CS8603 // Possible null reference return.
+                        foreach (ResearchProjectDef projectDef in ar.alienRace.raceRestriction.researchList.SelectMany(selector: rl => rl?.projects))
+                        {
+                            if (!RaceRestrictionSettings.researchRestrictionDict.ContainsKey(projectDef))
+                                RaceRestrictionSettings.researchRestrictionDict.Add(projectDef, []);
+                            RaceRestrictionSettings.researchRestrictionDict[projectDef].Add(ar);
+                        }
+#pragma warning restore CS8603 // Possible null reference return.
 
-                    foreach (ResearchProjectDef projectDef in ar.alienRace.raceRestriction.researchList.SelectMany(selector: rl => rl?.projects))
-                    {
-                        if (!RaceRestrictionSettings.researchRestrictionDict.ContainsKey(projectDef))
-                            RaceRestrictionSettings.researchRestrictionDict.Add(projectDef, []);
-                        RaceRestrictionSettings.researchRestrictionDict[projectDef].Add(ar);
-                    }
+                        foreach (GeneDef geneDef in ar.alienRace.raceRestriction.geneList)
+                        {
+                            RaceRestrictionSettings.geneRestricted.Add(geneDef);
+                            ar.alienRace.raceRestriction.whiteGeneList.Add(geneDef);
+                        }
 
-                    foreach (GeneDef geneDef in ar.alienRace.raceRestriction.geneList)
-                    {
-                        RaceRestrictionSettings.geneRestricted.Add(geneDef);
-                        ar.alienRace.raceRestriction.whiteGeneList.Add(geneDef);
-                    }
+                        foreach (GeneDef geneDef in ar.alienRace.raceRestriction.geneListEndo)
+                        {
+                            RaceRestrictionSettings.geneRestrictedEndo.Add(geneDef);
+                            ar.alienRace.raceRestriction.whiteGeneListEndo.Add(geneDef);
+                        }
 
-                    foreach (GeneDef geneDef in ar.alienRace.raceRestriction.geneListEndo)
-                    {
-                        RaceRestrictionSettings.geneRestrictedEndo.Add(geneDef);
-                        ar.alienRace.raceRestriction.whiteGeneListEndo.Add(geneDef);
-                    }
+                        foreach (GeneDef geneDef in ar.alienRace.raceRestriction.geneListXeno)
+                        {
+                            RaceRestrictionSettings.geneRestrictedXeno.Add(geneDef);
+                            ar.alienRace.raceRestriction.whiteGeneListXeno.Add(geneDef);
+                        }
 
-                    foreach (GeneDef geneDef in ar.alienRace.raceRestriction.geneListXeno)
-                    {
-                        RaceRestrictionSettings.geneRestrictedXeno.Add(geneDef);
-                        ar.alienRace.raceRestriction.whiteGeneListXeno.Add(geneDef);
-                    }
+                        foreach (XenotypeDef xenotypeDef in ar.alienRace.raceRestriction.xenotypeList)
+                        {
+                            RaceRestrictionSettings.xenotypeRestricted.Add(xenotypeDef);
+                            ar.alienRace.raceRestriction.whiteXenotypeList.Add(xenotypeDef);
+                        }
 
-                    foreach (XenotypeDef xenotypeDef in ar.alienRace.raceRestriction.xenotypeList)
-                    {
-                        RaceRestrictionSettings.xenotypeRestricted.Add(xenotypeDef);
-                        ar.alienRace.raceRestriction.whiteXenotypeList.Add(xenotypeDef);
-                    }
-
-                    foreach (ThingDef thingDef in ar.alienRace.raceRestriction.reproductionList)
-                    {
-                        RaceRestrictionSettings.reproductionRestricted.Add(thingDef);
-                        ar.alienRace.raceRestriction.whiteReproductionList.Add(thingDef);
+                        foreach (ThingDef thingDef in ar.alienRace.raceRestriction.reproductionList)
+                        {
+                            RaceRestrictionSettings.reproductionRestricted.Add(thingDef);
+                            ar.alienRace.raceRestriction.whiteReproductionList.Add(thingDef);
+                        }
                     }
 
                     if (ar.alienRace.generalSettings.corpseCategory != ThingCategoryDefOf.CorpsesHumanlike)
@@ -289,12 +296,12 @@ namespace Ashs_Alien_Patches
                             if (rd.recipeUsers?.Contains(ThingDefOf.Human) ?? false)
                                 rd.recipeUsers.Add(ar);
                             if (!rd.defaultIngredientFilter?.Allows(ThingDefOf.Meat_Human) ?? false)
-                                rd.defaultIngredientFilter.SetAllow(ar.race.meatDef, allow: false);
+                                rd.defaultIngredientFilter?.SetAllow(ar.race.meatDef, allow: false);
                         });
                         ar.recipes.RemoveDuplicates();
                     }
 
-                    // Unpatch 
+                    // Unpatch
                     ar.alienRace.raceRestriction?.workGiverList?.ForEach(action: wgd =>
                     {
                         if (wgd == null) return;
@@ -335,7 +342,7 @@ namespace Ashs_Alien_Patches
             }
             catch (Exception e)
             {
-                Log.Error(string.Format($"Ash Patch Manager: Exception when trying Hot Reload, aborting custom HAR fix. If issues persist, please notify the author for the either the Argonian or Cutebold Race with the logs. Thanks!\n{e}"));
+                Log.Error($"Ash Patch Manager: Exception when trying Hot Reload, aborting custom HAR fix. If issues persist, please notify the author for the either the Argonian or Cutebold Race with the logs. Thanks!\n{e}");
                 return;
             }
         }
@@ -357,11 +364,10 @@ namespace Ashs_Alien_Patches
             List<CodeInstruction> instructionList = instructions.ToList();
             int instructionListCount = instructionList.Count;
 
-
             /*
-             *  
+             *
              * Replaces == LifeStageDefOf.HumanlikeBaby with .developmentalStage.Baby()
-             * 
+             *
              */
             List<CodeInstruction> babyFix =
             [
@@ -391,7 +397,7 @@ namespace Ashs_Alien_Patches
                                 goto SkipInstruction;
                             }
                             tempInstruction.operand = instructionList[i + 1].operand; // Grab branch label
-                            
+
                             yield return tempInstruction;
                         }
                         else yield return codeInstruction;
@@ -415,14 +421,14 @@ namespace Ashs_Alien_Patches
         public static IEnumerable<CodeInstruction> Alien_CertaintyChangeFactor_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo alienCertaintyChangeFactor = AccessTools.Method(typeof(Alien_Patches), nameof(Alien_Patches.CertaintyCurve));
-            string x = Traverse.Create(typeof(Pawn_IdeoTracker)).Fields()[0];
+            string x = Traverse.Create<Pawn_IdeoTracker>().Fields()[0];
             FieldInfo pawn = AccessTools.Field(typeof(Pawn_IdeoTracker), "pawn");
 
             List<CodeInstruction> instructionList = instructions.ToList();
             int instructionListCount = instructionList.Count;
 
             /*
-             * See drSpy decompile of PawnIdeo_Tracker.get_CertaintyChangeFactor() for variable references 
+             * See drSpy decompile of PawnIdeo_Tracker.get_CertaintyChangeFactor() for variable references
              */
             List<CodeInstruction> racialCertainty =
             [
@@ -438,7 +444,6 @@ namespace Ashs_Alien_Patches
 
                 if (i + 1 < instructionListCount && instructionList[i].opcode == OpCodes.Ldsfld)
                 {
-
                     racialCertainty[0] = racialCertainty[0].MoveLabelsFrom(instructionList[i]);
                     foreach (CodeInstruction codeInstruction in racialCertainty)
                     {
@@ -453,8 +458,9 @@ namespace Ashs_Alien_Patches
 
         /// <summary>Racial ideology certainty curves</summary>
         private static readonly Dictionary<ThingDef, SimpleCurve> ideoCurves = [];
+
         /// <summary>Curve from ideoCurves that is going to be evaluated</summary>
-        private static SimpleCurve certaintyCurveTemp;
+        private static SimpleCurve? certaintyCurveTemp;
 
         /// <summary>
         /// Creates a certainty curve for each race. Ideology does not matter, just the pawn's child and adult ages.
@@ -494,6 +500,7 @@ namespace Ashs_Alien_Patches
 
         #region Personal Patches
 #if DEBUG && RW1_4
+
         /// <summary>
         /// Personal Patches for various annoyances/bugs
         /// </summary>
@@ -518,7 +525,7 @@ namespace Ashs_Alien_Patches
             harmony.Patch(AccessTools.Method(typeof(ChildcareUtility), "SuckleFromLactatingPawn"), transpiler: new HarmonyMethod(thisClass, nameof(FasterFeeding_Transpiler)));
         }
 
-   // Personal patches
+        // Personal patches
         [PatchVersion(1), PatchType(PatchedTypes.Transpiler)]
         public static IEnumerable<CodeInstruction> FasterFeeding_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -527,8 +534,6 @@ namespace Ashs_Alien_Patches
 
             for (int i = 0; i < instructionListCount; i++)
             {
-
-
                 if (instructionList[i].Is(OpCodes.Ldc_R4, 5000f))
                 {
                     instructionList[i].operand = 1250f;
@@ -537,7 +542,8 @@ namespace Ashs_Alien_Patches
             }
         }
 #endif
-#endregion
+        #endregion Personal Patches
     }
 }
+
 #endif
